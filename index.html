@@ -4,7 +4,325 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>WrestleSIM</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <style>
+:root {
+  --bg: #0c0d12;
+  --panel: #151722;
+  --panel-2: #1b1f2d;
+  --panel-3: #222738;
+  --text: #f4f5f9;
+  --muted: #a8adbd;
+  --line: rgba(255,255,255,0.1);
+  --accent: #e51b2b;
+  --accent-2: #ffb21c;
+  --good: #38d071;
+  --bad: #ff4f5f;
+  --warn: #ffca4f;
+  --info: #66b5ff;
+  --shadow: 0 18px 60px rgba(0,0,0,0.4);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(229,27,43,0.22), transparent 36rem),
+    radial-gradient(circle at top right, rgba(255,178,28,0.11), transparent 28rem),
+    linear-gradient(135deg, #08090d 0%, #10121b 55%, #090a0f 100%);
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.app-shell {
+  width: min(1420px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 22px 0 44px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background:
+    linear-gradient(120deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0 10px, transparent 10px 20px);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -90px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 22px solid rgba(229,27,43,0.28);
+  filter: blur(0.2px);
+}
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+h1 {
+  margin: 0;
+  line-height: .9;
+  font-size: clamp(3.1rem, 8vw, 7.2rem);
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+}
+h1 span { color: var(--accent); }
+.tagline {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+}
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  z-index: 1;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+.tab, .btn, .icon-btn {
+  border: 1px solid var(--line);
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-weight: 800;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.tab:hover, .btn:hover, .icon-btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.24); }
+.tab.active, .btn { background: linear-gradient(135deg, var(--accent), #9d111d); border-color: rgba(255,255,255,0.16); }
+.btn.secondary, .tab { background: rgba(255,255,255,0.06); }
+.btn.ghost { background: transparent; }
+.btn.good { background: linear-gradient(135deg, #28ad62, #176c3a); }
+.btn.warn { background: linear-gradient(135deg, #d19421, #9c5c0d); }
+.btn.bad { background: linear-gradient(135deg, #d42b3a, #84151f); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+.panel {
+  display: none;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(21,23,34,0.86);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  min-height: 540px;
+  backdrop-filter: blur(8px);
+}
+.panel.active { display: block; }
+
+.grid { display: grid; gap: 16px; }
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid.auto { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+.card {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.card.dark { background: var(--panel-2); }
+.card h2, .card h3, .section-title h2, .section-title h3 { margin: 0 0 8px; }
+.card p { color: var(--muted); margin: 8px 0; }
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.section-title p { margin: 4px 0 0; color: var(--muted); }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.stat {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.045);
+  border-radius: 16px;
+  padding: 14px;
+}
+.stat .label { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 900; }
+.stat .value { margin-top: 4px; font-size: 1.6rem; font-weight: 950; letter-spacing: -0.04em; }
+.stat .sub { margin-top: 3px; color: var(--muted); font-size: .84rem; }
+
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.progress > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.progress.good > span { background: linear-gradient(90deg, #27b465, #68e48f); }
+.progress.bad > span { background: linear-gradient(90deg, #ff4f5f, #c41525); }
+.progress.info > span { background: linear-gradient(90deg, #327ad7, #8bc5ff); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; text-align: left; }
+th { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; }
+tr:hover td { background: rgba(255,255,255,0.03); }
+.name-cell strong { display: block; }
+.name-cell span { color: var(--muted); font-size: .84rem; }
+
+.pill, .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  font-weight: 800;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+.pill.good { color: var(--good); }
+.pill.bad { color: var(--bad); }
+.pill.warn { color: var(--warn); }
+.pill.info { color: var(--info); }
+
+.log-list { display: grid; gap: 9px; max-height: 440px; overflow: auto; padding-right: 6px; }
+.log-item {
+  border-left: 4px solid var(--accent);
+  background: rgba(255,255,255,0.045);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--muted);
+}
+.log-item strong { color: var(--text); }
+.log-item.good { border-left-color: var(--good); }
+.log-item.bad { border-left-color: var(--bad); }
+.log-item.warn { border-left-color: var(--warn); }
+.log-item.info { border-left-color: var(--info); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(0,0,0,0.24);
+  color: var(--text);
+  padding: 11px 12px;
+  outline: none;
+}
+select option { background: #11131c; color: var(--text); }
+label { display: grid; gap: 6px; color: var(--muted); font-weight: 800; font-size: .86rem; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+
+.match-slot {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.04);
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+.match-slot h3 { margin: 0; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+.match-result {
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid var(--line);
+}
+.match-result .rating { font-size: 1.5rem; font-weight: 950; color: var(--accent-2); }
+
+.wrestler-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.045);
+  border-radius: 18px;
+  padding: 14px;
+}
+.wrestler-card .top { display:flex; justify-content:space-between; gap:12px; }
+.wrestler-card h3 { margin: 0; }
+.small { color: var(--muted); font-size: .86rem; }
+.bar-row { display:grid; grid-template-columns: 84px 1fr 36px; gap: 8px; align-items:center; font-size: .82rem; color: var(--muted); }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  z-index: 20;
+}
+.modal {
+  width: min(680px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: #151722;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+.modal h2 { margin-top: 0; }
+.modal p { color: var(--muted); }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: #181b27;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 30;
+  max-width: 360px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+.kpi { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.kpi strong { font-size:1.1rem; }
+.actions-row { display:flex; gap:8px; flex-wrap:wrap; }
+hr.soft { border:0; border-top:1px solid var(--line); margin:14px 0; }
+
+@media (max-width: 800px) {
+  .hero { align-items: flex-start; flex-direction: column; }
+  .hero-actions { justify-content: flex-start; }
+  .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr; }
+  .section-title { flex-direction: column; }
+  th, td { padding: 9px 8px; }
+}
+
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -42,6 +360,1294 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="modalRoot"></div>
-  <script src="./app.js"></script>
+  <script>
+/* WrestleSIM - Vanilla browser wrestling promotion business simulator */
+const STORAGE_KEY = "wrestlesim_save_v1";
+
+const firstNames = ["Ace", "Mason", "Rex", "Jett", "Duke", "Colt", "Dante", "Knox", "Ryder", "Gunner", "Cash", "Brody", "Vince", "Maverick", "Silas", "Axel", "Luca", "Hawk", "Nico", "Roman", "Blaine", "Kade", "Tyson", "Logan", "Drake", "Maddox", "Briggs", "Sawyer", "Enzo", "Malik"];
+const lastNames = ["Steel", "Raines", "Cross", "Graves", "Stone", "Black", "King", "Vega", "Wilde", "Knight", "Storm", "Hayes", "Frost", "Reed", "Hallow", "Price", "Rhodes", "Vance", "Hardy", "Bishop", "Cage", "Lawson", "Winters", "Mercer", "Fox", "Archer", "Reigns", "Rivers", "Slade", "Hendrix"];
+const nicknames = ["The Workhorse", "Big Money", "The Outlaw", "Main Event", "The Machine", "The Blueprint", "The Prospect", "The Hammer", "The Wildcard", "No Mercy", "The Real Deal", "The Franchise", "The Problem", "The Showpiece", "The Rebel", "The Technician", "The Brawler", "The Prizefighter"];
+const archetypes = ["Brawler", "Technician", "High Flyer", "Powerhouse", "Talker", "Hardcore", "All-Rounder", "Veteran", "Prospect", "Monster"];
+const matchTypes = [
+  { id: "singles", name: "Singles", wrestlers: 2, risk: 4, cost: 0, pop: 0 },
+  { id: "tag", name: "Tag Team", wrestlers: 4, risk: 5, cost: 400, pop: 5 },
+  { id: "triple", name: "Triple Threat", wrestlers: 3, risk: 6, cost: 250, pop: 4 },
+  { id: "fourway", name: "Fatal 4-Way", wrestlers: 4, risk: 7, cost: 350, pop: 7 },
+  { id: "hardcore", name: "Hardcore", wrestlers: 2, risk: 14, cost: 900, pop: 9 },
+  { id: "cage", name: "Steel Cage", wrestlers: 2, risk: 12, cost: 1300, pop: 12 },
+  { id: "ladder", name: "Ladder Match", wrestlers: 2, risk: 16, cost: 1600, pop: 15 }
+];
+const showTypes = {
+  weekly: { name: "Weekly Show", slots: 4, venue: 3200, production: 1600, fanBase: 1, sponsorBase: 900 },
+  big: { name: "Big Show", slots: 7, venue: 8200, production: 5200, fanBase: 2.25, sponsorBase: 2300 }
+};
+const tiers = [
+  { name: "Lousy Indy Fed", minFans: 0, sponsor: 1, target: "survive local gym crowds" },
+  { name: "Hot Local Promotion", minFans: 4500, sponsor: 1.25, target: "own your home territory" },
+  { name: "Regional Player", minFans: 14000, sponsor: 1.65, target: "tour nearby states" },
+  { name: "National TV Threat", minFans: 45000, sponsor: 2.15, target: "fight for cable attention" },
+  { name: "Major League Promotion", minFans: 115000, sponsor: 3, target: "compete with the giants" }
+];
+
+let state;
+let currentTab = "dashboard";
+let booking = null;
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const money = (n) => n < 0 ? `-$${Math.abs(Math.round(n)).toLocaleString()}` : `$${Math.round(n).toLocaleString()}`;
+const pct = (n) => `${Math.round(n)}%`;
+const esc = (s) => String(s).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+
+function weightedPick(items) {
+  const total = items.reduce((sum, i) => sum + i.weight, 0);
+  let roll = Math.random() * total;
+  for (const item of items) {
+    roll -= item.weight;
+    if (roll <= 0) return item.value;
+  }
+  return items[items.length - 1].value;
+}
+
+function makeWrestler(seed = {}) {
+  const first = seed.first || firstNames[rnd(0, firstNames.length - 1)];
+  const last = seed.last || lastNames[rnd(0, lastNames.length - 1)];
+  const archetype = seed.archetype || archetypes[rnd(0, archetypes.length - 1)];
+  const base = seed.base || rnd(32, 64);
+  const age = seed.age || rnd(21, 44);
+  const upside = age < 28 ? rnd(7, 18) : age > 38 ? rnd(-4, 8) : rnd(2, 12);
+  const ego = seed.ego ?? rnd(18, 82);
+  const stats = statSpread(archetype, base);
+  const value = Math.round((stats.skill + stats.charisma + stats.look + stats.safety + stats.overness + Math.max(0, upside * 2)) / 6);
+  return {
+    id: crypto.randomUUID(),
+    name: seed.name || `${first} ${last}`,
+    nickname: seed.nickname || nicknames[rnd(0, nicknames.length - 1)],
+    archetype,
+    age,
+    skill: stats.skill,
+    charisma: stats.charisma,
+    look: stats.look,
+    safety: stats.safety,
+    overness: stats.overness,
+    morale: seed.morale ?? rnd(52, 82),
+    fatigue: seed.fatigue ?? rnd(4, 24),
+    momentum: seed.momentum ?? rnd(38, 62),
+    ego,
+    attitude: weightedPick([
+      { value: "Locker Room Leader", weight: 10 },
+      { value: "Professional", weight: 35 },
+      { value: "Quiet", weight: 22 },
+      { value: "Hothead", weight: 14 },
+      { value: "Politicker", weight: 10 },
+      { value: "Party Animal", weight: 9 }
+    ]),
+    contract: seed.contract ?? rnd(12, 34),
+    pay: seed.pay ?? Math.round((value * rnd(32, 58)) / 10) * 10,
+    injured: seed.injured ?? 0,
+    push: seed.push || weightedPick([
+      { value: "Enhancement", weight: 35 },
+      { value: "Midcard", weight: 45 },
+      { value: "Upper Card", weight: 17 },
+      { value: "Ace", weight: 3 }
+    ]),
+    lastBooked: -10,
+    wins: 0,
+    losses: 0,
+    starPower: value + rnd(-5, 5)
+  };
+}
+
+function statSpread(archetype, base) {
+  const mod = {
+    "Brawler": [8, -3, 4, -1, 2],
+    "Technician": [12, -4, -3, 8, 0],
+    "High Flyer": [6, 2, 4, -5, 4],
+    "Powerhouse": [2, -2, 12, -2, 3],
+    "Talker": [-2, 15, 4, 1, 4],
+    "Hardcore": [4, 4, 2, -7, 5],
+    "All-Rounder": [6, 6, 5, 5, 3],
+    "Veteran": [8, 6, -3, 9, 4],
+    "Prospect": [0, 0, 5, -2, -4],
+    "Monster": [0, -3, 14, -4, 4]
+  }[archetype] || [0,0,0,0,0];
+  return {
+    skill: clamp(base + mod[0] + rnd(-10, 10), 10, 98),
+    charisma: clamp(base + mod[1] + rnd(-10, 10), 10, 98),
+    look: clamp(base + mod[2] + rnd(-10, 10), 10, 98),
+    safety: clamp(base + mod[3] + rnd(-10, 10), 10, 98),
+    overness: clamp(base + mod[4] + rnd(-14, 8), 5, 94)
+  };
+}
+
+function starterRoster() {
+  return [
+    makeWrestler({ name: "Duke Maddox", nickname: "The Rust Belt Ace", archetype: "Brawler", base: 58, pay: 410, push: "Ace", ego: 68 }),
+    makeWrestler({ name: "Caleb Cross", nickname: "The Blueprint", archetype: "Technician", base: 54, pay: 360, push: "Upper Card", ego: 44 }),
+    makeWrestler({ name: "Jett Vega", nickname: "Skyline", archetype: "High Flyer", base: 51, pay: 320, push: "Midcard", ego: 35 }),
+    makeWrestler({ name: "Rex Graves", nickname: "No Mercy", archetype: "Powerhouse", base: 49, pay: 300, push: "Midcard", ego: 71 }),
+    makeWrestler({ name: "Cash Monroe", nickname: "Big Money", archetype: "Talker", base: 47, pay: 280, push: "Midcard", ego: 80 }),
+    makeWrestler({ name: "Knox Hallow", nickname: "The Problem", archetype: "Hardcore", base: 45, pay: 260, push: "Enhancement", ego: 62 }),
+    makeWrestler({ name: "Mason Reed", nickname: "The Workhorse", archetype: "All-Rounder", base: 50, pay: 310, push: "Midcard", ego: 28 }),
+    makeWrestler({ name: "Silas King", nickname: "Old School", archetype: "Veteran", base: 48, pay: 330, push: "Upper Card", ego: 50 }),
+    makeWrestler({ name: "Blaine Archer", nickname: "The Prospect", archetype: "Prospect", base: 41, pay: 190, push: "Enhancement", ego: 25 }),
+    makeWrestler({ name: "Hawk Stone", nickname: "The Mountain", archetype: "Monster", base: 44, pay: 270, push: "Enhancement", ego: 58 })
+  ];
+}
+
+function makeFreeAgents(count = 10) {
+  return Array.from({ length: count }, () => makeWrestler({ base: rnd(29, 69), contract: rnd(16, 42), pay: rnd(180, 680) }));
+}
+
+function newGame() {
+  state = {
+    gameVersion: 1,
+    promotion: "WrestleSIM Wrestling",
+    week: 1,
+    cash: 24000,
+    fans: 1450,
+    reputation: 16,
+    fanSatisfaction: 52,
+    lockerRoom: 58,
+    momentum: 48,
+    sponsorTrust: 35,
+    debt: 0,
+    marketingSpend: 800,
+    productionLevel: 1,
+    ticketPrice: 18,
+    merchQuality: 1,
+    difficulty: "Standard",
+    titleHolder: null,
+    roster: starterRoster(),
+    freeAgents: makeFreeAgents(12),
+    rivalries: [],
+    history: [],
+    news: [],
+    rivals: [
+      { name: "Titan Sports Entertainment", fans: 620000, heat: 88 },
+      { name: "Elite Wrestling Alliance", fans: 265000, heat: 79 },
+      { name: "Global Grapple League", fans: 84000, heat: 56 }
+    ],
+    lastShow: null,
+    lastMatches: {},
+    achievements: []
+  };
+  state.titleHolder = state.roster[0].id;
+  log("WrestleSIM begins. You bought a struggling indy fed with a ring, a roster, and a dream.", "info");
+  initBooking();
+  renderAll();
+  toast("New WrestleSIM game started.");
+}
+
+function currentTier() {
+  return [...tiers].reverse().find(t => state.fans >= t.minFans) || tiers[0];
+}
+
+function nextTier() {
+  return tiers.find(t => state.fans < t.minFans);
+}
+
+function weeklyPayroll() {
+  return state.roster.reduce((sum, w) => sum + w.pay, 0);
+}
+
+function avgRoster(attr) {
+  if (!state.roster.length) return 0;
+  return Math.round(state.roster.reduce((sum, w) => sum + w[attr], 0) / state.roster.length);
+}
+
+function topWrestlers(count = 5) {
+  return [...state.roster]
+    .sort((a, b) => (b.overness + b.momentum + b.skill + b.charisma) - (a.overness + a.momentum + a.skill + a.charisma))
+    .slice(0, count);
+}
+
+function log(message, type = "info") {
+  state.news.unshift({ week: state.week, message, type, id: crypto.randomUUID() });
+  state.news = state.news.slice(0, 80);
+}
+
+function history(entry) {
+  state.history.unshift({ ...entry, id: crypto.randomUUID(), week: state.week });
+  state.history = state.history.slice(0, 80);
+}
+
+function initBooking() {
+  const type = state.week % 4 === 0 ? "big" : "weekly";
+  const def = showTypes[type];
+  booking = {
+    type,
+    showName: type === "big" ? `WrestleSIM Supercard ${Math.ceil(state.week / 4)}` : `WrestleSIM Weekly #${state.week}`,
+    slots: Array.from({ length: def.slots }, (_, i) => ({
+      type: i === def.slots - 1 ? "singles" : (i === 1 && def.slots > 4 ? "tag" : "singles"),
+      stakes: i === def.slots - 1 ? "Main Event" : i === 0 ? "Opener" : "Showcase",
+      wrestlers: [],
+      title: i === def.slots - 1 && state.week % 4 === 0,
+      promo: false
+    }))
+  };
+}
+
+function tab(id) {
+  currentTab = id;
+  $$(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === id));
+  $$(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.id === id));
+  renderCurrent();
+}
+
+function renderAll() {
+  renderDashboard();
+  renderBooking();
+  renderRoster();
+  renderMarket();
+  renderHistory();
+  renderHelp();
+}
+function renderCurrent() {
+  if (currentTab === "dashboard") renderDashboard();
+  if (currentTab === "booking") renderBooking();
+  if (currentTab === "roster") renderRoster();
+  if (currentTab === "market") renderMarket();
+  if (currentTab === "history") renderHistory();
+  if (currentTab === "help") renderHelp();
+}
+
+function renderDashboard() {
+  const tier = currentTier();
+  const nxt = nextTier();
+  const tierProgress = nxt ? clamp((state.fans - tier.minFans) / (nxt.minFans - tier.minFans) * 100, 0, 100) : 100;
+  const last = state.lastShow;
+  $("#dashboard").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>Owner's Office</h2>
+        <p>Week ${state.week} · ${esc(tier.name)} · Current goal: ${esc(tier.target)}</p>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" onclick="openPromotionModal()">Promotion Settings</button>
+        <button class="btn" onclick="tab('booking')">Book This Week</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      ${stat("Cash", money(state.cash), state.cash < 5000 ? "Danger zone" : "Keep the lights on")}
+      ${stat("Fans", state.fans.toLocaleString(), nxt ? `${nxt.minFans.toLocaleString()} needed for ${nxt.name}` : "You are major league")}
+      ${stat("Reputation", pct(state.reputation), "Affects sponsorship and free agents")}
+      ${stat("Fan Satisfaction", pct(state.fanSatisfaction), "Low fans will stop coming")}
+      ${stat("Locker Room", pct(state.lockerRoom), "Morale, drama, and no-shows")}
+      ${stat("Sponsor Trust", pct(state.sponsorTrust), "Business partners and ad money")}
+    </div>
+
+    <div class="grid two" style="margin-top:16px;">
+      <div class="card">
+        <h3>Company Growth</h3>
+        <div class="kpi"><strong>${esc(tier.name)}</strong><span class="pill info">${Math.round(tierProgress)}% to next tier</span></div>
+        <div class="progress info" style="margin:12px 0 8px;"><span style="width:${tierProgress}%"></span></div>
+        <p>${nxt ? `Next step: reach ${nxt.minFans.toLocaleString()} fans to become ${nxt.name}.` : "You are now fighting with the biggest wrestling companies in the world."}</p>
+        <hr class="soft">
+        <div class="form-grid">
+          <label>Weekly Marketing
+            <select onchange="setMarketing(this.value)">
+              ${[0, 400, 800, 1500, 3000, 6000].map(v => `<option value="${v}" ${state.marketingSpend === v ? "selected" : ""}>${money(v)} / week</option>`).join("")}
+            </select>
+          </label>
+          <label>Ticket Price
+            <select onchange="setTicketPrice(this.value)">
+              ${[12, 18, 24, 32, 42, 55].map(v => `<option value="${v}" ${state.ticketPrice === v ? "selected" : ""}>${money(v)}</option>`).join("")}
+            </select>
+          </label>
+          <label>Production Level
+            <select onchange="setProduction(this.value)">
+              ${[1,2,3,4,5].map(v => `<option value="${v}" ${state.productionLevel === v ? "selected" : ""}>Level ${v} · ${money(v * 700)} extra</option>`).join("")}
+            </select>
+          </label>
+          <label>Merch Quality
+            <select onchange="setMerch(this.value)">
+              ${[1,2,3,4].map(v => `<option value="${v}" ${state.merchQuality === v ? "selected" : ""}>Level ${v} · higher margin</option>`).join("")}
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Last Show</h3>
+        ${last ? `
+          <div class="stat-grid">
+            ${miniStat("Rating", `${last.rating}/100`)}
+            ${miniStat("Attendance", last.attendance.toLocaleString())}
+            ${miniStat("Profit", money(last.profit))}
+            ${miniStat("Fan Change", `${last.fanChange >= 0 ? "+" : ""}${last.fanChange.toLocaleString()}`)}
+          </div>
+          <p><strong>${esc(last.name)}</strong> produced ${last.summary}</p>
+        ` : `<p>No shows run yet. Book your first weekly card and find out if the fans buy in.</p>`}
+      </div>
+    </div>
+
+    <div class="grid two" style="margin-top:16px;">
+      <div class="card">
+        <h3>Top Stars</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Worker</th><th>Push</th><th>Over</th><th>Morale</th></tr></thead>
+            <tbody>${topWrestlers(6).map(w => `
+              <tr>
+                <td class="name-cell"><strong>${esc(w.name)}</strong><span>${esc(w.nickname)} · ${esc(w.archetype)}</span></td>
+                <td>${esc(w.push)}</td>
+                <td>${pill(w.overness)}</td>
+                <td>${pill(w.morale, moraleClass(w.morale))}</td>
+              </tr>
+            `).join("")}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <h3>News Desk</h3>
+        ${renderLog(state.news.slice(0, 8))}
+      </div>
+    </div>
+  `;
+}
+
+function stat(label, value, sub) {
+  return `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div><div class="sub">${esc(sub)}</div></div>`;
+}
+function miniStat(label, value) {
+  return `<div class="stat"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div></div>`;
+}
+function pill(value, cls = "") {
+  return `<span class="pill ${cls}">${esc(value)}</span>`;
+}
+function moraleClass(v) {
+  if (v >= 72) return "good";
+  if (v <= 35) return "bad";
+  if (v <= 50) return "warn";
+  return "";
+}
+
+function renderBooking() {
+  if (!booking) initBooking();
+  const def = showTypes[booking.type];
+  const available = state.roster.filter(w => w.injured <= 0);
+  const selectedIds = booking.slots.flatMap(s => s.wrestlers);
+  const duplicates = selectedIds.filter((id, idx) => selectedIds.indexOf(id) !== idx);
+  const estCost = def.venue + def.production + state.productionLevel * 700 + state.marketingSpend + booking.slots.reduce((sum, slot) => sum + (matchTypes.find(m => m.id === slot.type)?.cost || 0), 0) + weeklyPayroll();
+  $("#booking").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>Book Show</h2>
+        <p>${esc(def.name)} · Week ${state.week} · Estimated operating cost ${money(estCost)}</p>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" onclick="autoBook()">Auto Book</button>
+        <button class="btn" onclick="runShow()">Run Show</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="form-grid">
+        <label>Show Name
+          <input class="input" value="${esc(booking.showName)}" oninput="booking.showName=this.value" />
+        </label>
+        <label>Show Type
+          <select onchange="changeShowType(this.value)">
+            <option value="weekly" ${booking.type === "weekly" ? "selected" : ""}>Weekly Show</option>
+            <option value="big" ${booking.type === "big" ? "selected" : ""}>Big Show / Supercard</option>
+          </select>
+        </label>
+      </div>
+      <p>${duplicates.length ? `<span class="pill warn">Warning: You booked someone more than once. Fatigue will jump and fans may notice.</span>` : `<span class="pill good">Card is clean. No double-booked talent.</span>`}</p>
+    </div>
+
+    <div class="grid two">
+      <div class="grid">
+        ${booking.slots.map((slot, i) => renderMatchSlot(slot, i, available)).join("")}
+      </div>
+      <aside class="grid">
+        <div class="card">
+          <h3>Booking Notes</h3>
+          <p>Fans care about star power, in-ring quality, match variety, momentum, a hot main event, and giving big shows a major-feel card.</p>
+          <p>Wrestlers care about wins, push level, fatigue, money, and whether you embarrass them.</p>
+          <div class="stat-grid">
+            ${miniStat("Payroll", money(weeklyPayroll()))}
+            ${miniStat("Healthy Talent", `${available.length}/${state.roster.length}`)}
+            ${miniStat("Active Rivalries", state.rivalries.length)}
+          </div>
+        </div>
+        <div class="card">
+          <h3>Active Rivalries</h3>
+          ${state.rivalries.length ? state.rivalries.map(r => renderRivalry(r)).join("") : `<p>No active rivalries. Start one from the roster screen or office modal.</p>`}
+        </div>
+      </aside>
+    </div>
+  `;
+}
+
+function renderMatchSlot(slot, i, available) {
+  const mt = matchTypes.find(m => m.id === slot.type) || matchTypes[0];
+  const options = available.map(w => `<option value="${w.id}">${esc(w.name)} · ${w.push} · Over ${w.overness} · Fatigue ${w.fatigue}</option>`).join("");
+  const wrestlerSelectors = Array.from({ length: mt.wrestlers }, (_, idx) => `
+    <label>Wrestler ${idx + 1}
+      <select onchange="setSlotWrestler(${i}, ${idx}, this.value)">
+        <option value="">Choose wrestler</option>
+        ${available.map(w => `<option value="${w.id}" ${slot.wrestlers[idx] === w.id ? "selected" : ""}>${esc(w.name)} · ${w.push} · Over ${w.overness}</option>`).join("")}
+      </select>
+    </label>
+  `).join("");
+  return `
+    <div class="match-slot">
+      <h3>Match ${i + 1} <span class="pill ${i === booking.slots.length - 1 ? "warn" : ""}">${esc(slot.stakes)}</span></h3>
+      <div class="form-grid">
+        <label>Match Type
+          <select onchange="setSlotType(${i}, this.value)">
+            ${matchTypes.map(m => `<option value="${m.id}" ${m.id === slot.type ? "selected" : ""}>${m.name} · ${m.wrestlers} workers · Risk ${m.risk}</option>`).join("")}
+          </select>
+        </label>
+        <label>Purpose
+          <select onchange="setSlotStakes(${i}, this.value)">
+            ${["Opener", "Showcase", "Hot Angle", "Co-Main", "Main Event"].map(s => `<option value="${s}" ${slot.stakes === s ? "selected" : ""}>${s}</option>`).join("")}
+          </select>
+        </label>
+      </div>
+      <div class="form-grid">${wrestlerSelectors}</div>
+      <div class="controls">
+        <label style="display:flex;grid-template-columns:auto;gap:8px;align-items:center;">
+          <span><input type="checkbox" ${slot.title ? "checked" : ""} onchange="setSlotTitle(${i}, this.checked)"> Championship stakes</span>
+        </label>
+        <label style="display:flex;grid-template-columns:auto;gap:8px;align-items:center;">
+          <span><input type="checkbox" ${slot.promo ? "checked" : ""} onchange="setSlotPromo(${i}, this.checked)"> Add promo segment</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function renderRivalry(r) {
+  const a = wrestlerById(r.a), b = wrestlerById(r.b);
+  if (!a || !b) return "";
+  return `
+    <div class="log-item warn" style="margin-bottom:8px;">
+      <strong>${esc(a.name)} vs ${esc(b.name)}</strong><br>
+      Heat ${r.heat}/100 · Weeks ${r.weeks} · Blowoff target: ${r.blowoff || "Big Show"}
+    </div>
+  `;
+}
+
+function wrestlerById(id) {
+  return state.roster.find(w => w.id === id) || state.freeAgents.find(w => w.id === id);
+}
+
+function changeShowType(type) {
+  booking.type = type;
+  const def = showTypes[type];
+  const old = booking.slots || [];
+  booking.slots = Array.from({ length: def.slots }, (_, i) => old[i] || {
+    type: i === def.slots - 1 ? "singles" : "singles",
+    stakes: i === def.slots - 1 ? "Main Event" : i === 0 ? "Opener" : "Showcase",
+    wrestlers: [],
+    title: i === def.slots - 1 && type === "big",
+    promo: false
+  });
+  booking.showName = type === "big" ? `WrestleSIM Supercard ${Math.ceil(state.week / 4)}` : `WrestleSIM Weekly #${state.week}`;
+  renderBooking();
+}
+function setSlotWrestler(slotIndex, wrestlerIndex, id) {
+  booking.slots[slotIndex].wrestlers[wrestlerIndex] = id;
+}
+function setSlotType(slotIndex, type) {
+  const mt = matchTypes.find(m => m.id === type);
+  booking.slots[slotIndex].type = type;
+  booking.slots[slotIndex].wrestlers = booking.slots[slotIndex].wrestlers.slice(0, mt.wrestlers);
+  renderBooking();
+}
+function setSlotStakes(slotIndex, stakes) { booking.slots[slotIndex].stakes = stakes; }
+function setSlotTitle(slotIndex, checked) { booking.slots[slotIndex].title = checked; }
+function setSlotPromo(slotIndex, checked) { booking.slots[slotIndex].promo = checked; }
+
+function autoBook() {
+  const healthy = [...state.roster].filter(w => w.injured <= 0).sort((a, b) => (b.overness + b.momentum + b.skill) - (a.overness + a.momentum + a.skill));
+  if (healthy.length < 4) return toast("Not enough healthy talent to auto book.");
+  const used = new Set();
+  booking.slots.forEach((slot, i) => {
+    slot.stakes = i === booking.slots.length - 1 ? "Main Event" : i === 0 ? "Opener" : i === booking.slots.length - 2 ? "Co-Main" : "Showcase";
+    slot.type = i === 1 && healthy.length >= 8 ? "tag" : (booking.type === "big" && i === 2 ? "triple" : "singles");
+    const mt = matchTypes.find(m => m.id === slot.type);
+    const pool = healthy.filter(w => !used.has(w.id));
+    const picks = (pool.length >= mt.wrestlers ? pool : healthy).slice(0, mt.wrestlers);
+    slot.wrestlers = picks.map(w => w.id);
+    picks.forEach(w => used.add(w.id));
+    slot.title = i === booking.slots.length - 1 && booking.type === "big";
+    slot.promo = ["Main Event", "Co-Main", "Hot Angle"].includes(slot.stakes) && Math.random() > .35;
+  });
+  renderBooking();
+  toast("Auto-booked the card with your strongest healthy talent.");
+}
+
+function runShow() {
+  const errors = validateBooking();
+  if (errors.length) {
+    showModal("Card Not Ready", `<p>${errors.join("<br>")}</p>`, [{ label: "Fix Booking", cls: "btn", action: closeModal }]);
+    return;
+  }
+
+  const def = showTypes[booking.type];
+  const matchResults = [];
+  const seen = {};
+  let showRatingTotal = 0;
+  let mainEventRating = 0;
+  let injuryNotes = [];
+  let titleChange = null;
+
+  booking.slots.forEach((slot, idx) => {
+    const result = simulateMatch(slot, idx, booking.slots.length, seen);
+    matchResults.push(result);
+    showRatingTotal += result.rating * (slot.stakes === "Main Event" ? 1.45 : slot.stakes === "Co-Main" ? 1.2 : 1);
+    if (idx === booking.slots.length - 1) mainEventRating = result.rating;
+    injuryNotes = injuryNotes.concat(result.injuries);
+    if (result.titleChange) titleChange = result.titleChange;
+  });
+
+  const weightTotal = booking.slots.reduce((sum, slot) => sum + (slot.stakes === "Main Event" ? 1.45 : slot.stakes === "Co-Main" ? 1.2 : 1), 0);
+  let rating = Math.round(showRatingTotal / weightTotal);
+  rating = clamp(rating + Math.round((state.productionLevel - 1) * 1.2) + (booking.type === "big" ? 3 : 0), 1, 100);
+
+  const pricePenalty = state.ticketPrice > 24 ? (state.ticketPrice - 24) * 0.9 : 0;
+  const demand = clamp((state.fans * (0.16 + rating / 340) * def.fanBase) - (pricePenalty * 22), 110, state.fans * 0.82 + 400);
+  const venueCap = booking.type === "big" ? 8500 + state.reputation * 90 : 1400 + state.reputation * 38;
+  const attendance = Math.round(clamp(demand + rnd(-120, 220), 80, venueCap));
+  const ticketRevenue = attendance * state.ticketPrice;
+  const merchRevenue = Math.round(attendance * (2 + state.merchQuality * 1.35) * (rating / 70));
+  const sponsorRevenue = Math.round((def.sponsorBase + state.sponsorTrust * 34) * currentTier().sponsor);
+  const matchCosts = booking.slots.reduce((sum, slot) => sum + (matchTypes.find(m => m.id === slot.type)?.cost || 0), 0);
+  const costs = def.venue + def.production + matchCosts + weeklyPayroll() + state.marketingSpend + state.productionLevel * 700 + state.merchQuality * 450;
+  const revenue = ticketRevenue + merchRevenue + sponsorRevenue;
+  const profit = revenue - costs;
+  state.cash += profit;
+
+  const qualityDelta = Math.round((rating - 52) / 3.1 + (mainEventRating - 56) / 7);
+  const fanChange = Math.round((rating - 50) * (booking.type === "big" ? 20 : 10) + state.marketingSpend / 13 + attendance * (booking.type === "big" ? 0.09 : 0.035) - Math.max(0, pricePenalty * 12));
+  state.fans = Math.max(0, state.fans + fanChange);
+  state.fanSatisfaction = clamp(state.fanSatisfaction + qualityDelta, 0, 100);
+  state.reputation = clamp(state.reputation + Math.round((rating - 55) / 8) + (booking.type === "big" && rating > 70 ? 2 : 0), 0, 100);
+  state.momentum = clamp(state.momentum + Math.round((rating - 52) / 5), 0, 100);
+  state.sponsorTrust = clamp(state.sponsorTrust + Math.round((profit > 0 ? 1 : -1) + (rating - 58) / 12), 0, 100);
+  state.lockerRoom = clamp(avgRoster("morale") - Math.round(avgRoster("fatigue") / 4), 0, 100);
+
+  state.lastShow = {
+    name: booking.showName,
+    type: booking.type,
+    rating,
+    attendance,
+    profit,
+    revenue,
+    costs,
+    fanChange,
+    summary: rating >= 78 ? "a breakout night that had fans buzzing." : rating >= 62 ? "a solid show with room to grow." : rating >= 45 ? "a mixed night that kept the fed alive." : "a rough show that tested fan patience."
+  };
+  history({
+    name: booking.showName,
+    type: booking.type,
+    rating,
+    attendance,
+    profit,
+    fanChange,
+    matches: matchResults.map(m => ({ title: m.title, rating: m.rating, winner: m.winnerName }))
+  });
+
+  log(`${booking.showName} drew ${attendance.toLocaleString()} fans, scored ${rating}/100, and ${profit >= 0 ? "made" : "lost"} ${money(Math.abs(profit))}.`, profit >= 0 ? "good" : "bad");
+  if (fanChange > 0) log(`The fanbase grew by ${fanChange.toLocaleString()} after the show.`, "good");
+  else log(`The fanbase shrank by ${Math.abs(fanChange).toLocaleString()} after the show.`, "warn");
+  injuryNotes.forEach(note => log(note, "bad"));
+  if (titleChange) log(titleChange, "warn");
+
+  advanceWeek();
+  const resultHtml = renderShowResult(matchResults, revenue, costs, injuryNotes);
+  showModal(`${esc(state.history[0].name)} Results`, resultHtml, [
+    { label: "Continue to Office", cls: "btn", action: () => { closeModal(); tab("dashboard"); randomEvent(); } },
+    { label: "View History", cls: "btn secondary", action: () => { closeModal(); tab("history"); randomEvent(); } }
+  ]);
+}
+
+function validateBooking() {
+  const errors = [];
+  if (!booking.showName.trim()) errors.push("Give the show a name.");
+  booking.slots.forEach((slot, idx) => {
+    const mt = matchTypes.find(m => m.id === slot.type);
+    if (!slot.wrestlers || slot.wrestlers.filter(Boolean).length < mt.wrestlers) errors.push(`Match ${idx + 1} needs ${mt.wrestlers} wrestlers.`);
+    if (new Set(slot.wrestlers.filter(Boolean)).size !== slot.wrestlers.filter(Boolean).length) errors.push(`Match ${idx + 1} has the same wrestler selected more than once.`);
+  });
+  return errors;
+}
+
+function simulateMatch(slot, idx, totalSlots, seen) {
+  const mt = matchTypes.find(m => m.id === slot.type);
+  const wrestlers = slot.wrestlers.map(id => wrestlerById(id)).filter(Boolean);
+  const rivalryBoost = rivalryHeatFor(wrestlers.map(w => w.id));
+  const avgSkill = avg(wrestlers, "skill");
+  const avgCharisma = avg(wrestlers, "charisma");
+  const avgOver = avg(wrestlers, "overness");
+  const avgSafety = avg(wrestlers, "safety");
+  const avgMomentum = avg(wrestlers, "momentum");
+  const fatiguePenalty = avg(wrestlers, "fatigue") * 0.18;
+  const repeatPenalty = wrestlers.reduce((sum, w) => sum + (seen[w.id] ? 10 : 0), 0);
+  const stakesBoost = { "Opener": 1, "Showcase": 2, "Hot Angle": 6, "Co-Main": 8, "Main Event": 12 }[slot.stakes] || 2;
+  const promoBoost = slot.promo ? avgCharisma * 0.08 : 0;
+  let rating = Math.round(avgSkill * 0.32 + avgCharisma * 0.18 + avgOver * 0.25 + avgMomentum * 0.14 + avgSafety * 0.05 + mt.pop + rivalryBoost * 0.12 + stakesBoost + promoBoost - fatiguePenalty - repeatPenalty + rnd(-8, 8));
+  rating = clamp(rating, 1, 100);
+
+  wrestlers.forEach(w => seen[w.id] = (seen[w.id] || 0) + 1);
+  const winner = pickWinner(wrestlers, slot);
+  const losers = wrestlers.filter(w => w.id !== winner.id);
+  const titleHolder = wrestlerById(state.titleHolder);
+  let titleChange = null;
+  if (slot.title && titleHolder && wrestlers.some(w => w.id === state.titleHolder) && winner.id !== state.titleHolder) {
+    state.titleHolder = winner.id;
+    titleChange = `${winner.name} captured the WrestleSIM Championship from ${titleHolder.name}.`;
+  } else if (slot.title && !titleHolder) {
+    state.titleHolder = winner.id;
+    titleChange = `${winner.name} became the first WrestleSIM Champion.`;
+  }
+
+  winner.wins += 1;
+  winner.momentum = clamp(winner.momentum + 5 + Math.round(rating / 28), 0, 100);
+  winner.overness = clamp(winner.overness + Math.round((rating - 50) / 12) + (slot.title ? 2 : 0), 0, 100);
+  winner.morale = clamp(winner.morale + 3 + (winner.push === "Enhancement" && slot.stakes === "Main Event" ? 3 : 0), 0, 100);
+
+  losers.forEach(l => {
+    l.losses += 1;
+    l.momentum = clamp(l.momentum - 3 + Math.round((rating - 60) / 30), 0, 100);
+    l.overness = clamp(l.overness + Math.round((rating - 65) / 20), 0, 100);
+    l.morale = clamp(l.morale - (l.ego > 70 ? 4 : 2) + (rating > 72 ? 1 : 0), 0, 100);
+  });
+
+  const injuries = [];
+  wrestlers.forEach(w => {
+    const doubleBook = seen[w.id] > 1;
+    const risk = mt.risk + Math.max(0, w.fatigue - 55) * .22 + (100 - w.safety) * .08 + (doubleBook ? 10 : 0);
+    const fatigueGain = Math.round(mt.risk / 2 + (slot.stakes === "Main Event" ? 7 : 3) + (doubleBook ? 14 : 0));
+    w.fatigue = clamp(w.fatigue + fatigueGain, 0, 100);
+    w.lastBooked = state.week;
+    if (Math.random() * 100 < risk * 0.28) {
+      const weeks = rnd(1, mt.risk > 12 ? 6 : 3);
+      w.injured = weeks;
+      w.morale = clamp(w.morale - 8, 0, 100);
+      injuries.push(`${w.name} was hurt in the ${mt.name} and will miss ${weeks} week${weeks > 1 ? "s" : ""}.`);
+    }
+  });
+
+  progressRivalries(wrestlers, rating, slot);
+  const title = `${mt.name}: ${wrestlers.map(w => w.name).join(" vs ")}`;
+  return { title, rating, winnerName: winner.name, injuries, titleChange, slot };
+}
+
+function avg(list, attr) {
+  return list.length ? list.reduce((sum, item) => sum + item[attr], 0) / list.length : 0;
+}
+
+function rivalryHeatFor(ids) {
+  let boost = 0;
+  state.rivalries.forEach(r => {
+    if (ids.includes(r.a) && ids.includes(r.b)) boost += r.heat;
+  });
+  return boost;
+}
+
+function progressRivalries(wrestlers, rating, slot) {
+  const ids = wrestlers.map(w => w.id);
+  state.rivalries.forEach(r => {
+    if (ids.includes(r.a) && ids.includes(r.b)) {
+      r.weeks += 1;
+      r.heat = clamp(r.heat + Math.round((rating - 45) / 6) + (slot.promo ? 5 : 0) + (slot.title ? 5 : 0), 0, 100);
+      if (booking.type === "big" && slot.stakes === "Main Event") {
+        const a = wrestlerById(r.a), b = wrestlerById(r.b);
+        log(`The ${a?.name || ""} vs ${b?.name || ""} rivalry paid off on a big stage.`, "good");
+        r.finished = true;
+        wrestlers.forEach(w => w.overness = clamp(w.overness + 2, 0, 100));
+      }
+    }
+  });
+  state.rivalries = state.rivalries.filter(r => !r.finished);
+}
+
+function pickWinner(wrestlers, slot) {
+  const titleHolder = wrestlerById(state.titleHolder);
+  const weights = wrestlers.map(w => {
+    let score = w.overness * 1.5 + w.momentum + w.skill * 0.55 + w.charisma * 0.25;
+    if (w.push === "Ace") score += 35;
+    if (w.push === "Upper Card") score += 20;
+    if (w.push === "Enhancement") score -= 14;
+    if (slot.title && titleHolder && w.id === titleHolder.id) score += 25;
+    return Math.max(1, score);
+  });
+  const total = weights.reduce((a, b) => a + b, 0);
+  let roll = Math.random() * total;
+  for (let i = 0; i < wrestlers.length; i++) {
+    roll -= weights[i];
+    if (roll <= 0) return wrestlers[i];
+  }
+  return wrestlers[0];
+}
+
+function advanceWeek() {
+  state.roster.forEach(w => {
+    if (w.injured > 0) {
+      w.injured -= 1;
+      w.fatigue = clamp(w.fatigue - 16, 0, 100);
+      if (w.injured === 0) log(`${w.name} is medically cleared to return.`, "good");
+    } else if (w.lastBooked !== state.week) {
+      w.fatigue = clamp(w.fatigue - rnd(9, 18), 0, 100);
+      w.morale = clamp(w.morale - (w.push === "Ace" || w.push === "Upper Card" ? 2 : 0), 0, 100);
+    } else {
+      w.fatigue = clamp(w.fatigue - rnd(1, 6), 0, 100);
+    }
+    w.contract -= 1;
+    if (w.contract <= 0) {
+      w.morale = clamp(w.morale - 6, 0, 100);
+      log(`${w.name}'s contract is expiring. Renew them from the roster screen or risk losing them.`, "warn");
+    }
+  });
+
+  if (state.cash < 0) {
+    state.debt += Math.abs(state.cash);
+    state.cash = 0;
+    state.sponsorTrust = clamp(state.sponsorTrust - 4, 0, 100);
+    log("You had to borrow money to cover the week. Debt hurts sponsor confidence.", "bad");
+  }
+
+  expireBadContracts();
+  rivalMoves();
+  refreshFreeAgents();
+  state.week += 1;
+  initBooking();
+  renderAll();
+}
+
+function expireBadContracts() {
+  const leaving = state.roster.filter(w => w.contract < -2 && w.morale < 42);
+  leaving.forEach(w => {
+    state.roster = state.roster.filter(x => x.id !== w.id);
+    if (state.titleHolder === w.id) state.titleHolder = state.roster[0]?.id || null;
+    log(`${w.name} walked out after contract talks went cold.`, "bad");
+  });
+}
+
+function rivalMoves() {
+  state.rivals.forEach(r => {
+    r.fans = Math.round(r.fans * (1 + rnd(-1, 2) / 1000));
+  });
+  const poachTarget = [...state.roster].sort((a,b) => (b.overness + b.momentum + b.ego) - (a.overness + a.momentum + a.ego))[0];
+  if (poachTarget && poachTarget.overness > 64 && Math.random() < 0.08) {
+    poachTarget.morale = clamp(poachTarget.morale - 7, 0, 100);
+    poachTarget.ego = clamp(poachTarget.ego + 4, 0, 100);
+    log(`${poachTarget.name} says a bigger company has been sniffing around. They want a stronger push or more money.`, "warn");
+  }
+}
+
+function randomEvent() {
+  const chance = 0.42 + Math.max(0, 50 - state.lockerRoom) / 160;
+  if (Math.random() > chance) return;
+  const pool = state.roster.length ? state.roster : [];
+  if (!pool.length) return;
+  const w = pool[rnd(0, pool.length - 1)];
+  const event = weightedPick([
+    { value: "raise", weight: w.ego > 60 ? 18 : 8 },
+    { value: "late", weight: w.attitude === "Party Animal" || w.attitude === "Hothead" ? 18 : 8 },
+    { value: "viral", weight: 10 },
+    { value: "fight", weight: state.lockerRoom < 55 ? 14 : 5 },
+    { value: "sponsor", weight: state.reputation > 22 ? 10 : 4 },
+    { value: "training", weight: 12 },
+    { value: "localpress", weight: 8 }
+  ]);
+  if (event === "raise") contractDemand(w);
+  if (event === "late") disciplineEvent(w);
+  if (event === "viral") viralClip(w);
+  if (event === "fight") lockerRoomFight(w);
+  if (event === "sponsor") sponsorOffer();
+  if (event === "training") trainingBreakthrough(w);
+  if (event === "localpress") localPress();
+}
+
+function contractDemand(w) {
+  showModal("Wrestler Headache", `
+    <p><strong>${esc(w.name)}</strong> says they are underpaid and wants a better weekly deal.</p>
+    <p>Current pay: ${money(w.pay)} / week · Morale: ${w.morale} · Ego: ${w.ego}</p>
+  `, [
+    { label: `Give raise (+${money(120)}/wk)`, cls: "btn good", action: () => { w.pay += 120; w.morale = clamp(w.morale + 14,0,100); state.lockerRoom = clamp(state.lockerRoom + 2,0,100); log(`${w.name} got a raise and cooled down.`, "good"); closeModal(); renderAll(); } },
+    { label: "Promise bigger push", cls: "btn warn", action: () => { w.push = upgradePush(w.push); w.morale = clamp(w.morale + 8,0,100); w.ego = clamp(w.ego + 4,0,100); log(`${w.name} was promised a bigger role. Now you need to back it up.`, "warn"); closeModal(); renderAll(); } },
+    { label: "Tell them no", cls: "btn bad", action: () => { w.morale = clamp(w.morale - 16,0,100); state.lockerRoom = clamp(state.lockerRoom - 4,0,100); log(`${w.name} was denied a raise and the locker room noticed.`, "bad"); closeModal(); renderAll(); } }
+  ]);
+}
+
+function disciplineEvent(w) {
+  showModal("Backstage Problem", `
+    <p><strong>${esc(w.name)}</strong> showed up late and missed part of production rehearsal.</p>
+    <p>Do you fine them, protect the room, or sweep it under the rug?</p>
+  `, [
+    { label: "Fine them", cls: "btn warn", action: () => { state.cash += 250; w.morale = clamp(w.morale - 10,0,100); state.lockerRoom = clamp(state.lockerRoom + 4,0,100); log(`${w.name} was fined for being late. The locker room respected the standard.`, "warn"); closeModal(); renderAll(); } },
+    { label: "Give warning", cls: "btn", action: () => { w.morale = clamp(w.morale - 3,0,100); log(`${w.name} got a warning for being late.`, "info"); closeModal(); renderAll(); } },
+    { label: "Ignore it", cls: "btn bad", action: () => { state.lockerRoom = clamp(state.lockerRoom - 6,0,100); log(`You ignored ${w.name}'s lateness. Standards slipped backstage.`, "bad"); closeModal(); renderAll(); } }
+  ]);
+}
+
+function viralClip(w) {
+  const fans = rnd(180, 900) + Math.round(w.charisma * 8);
+  w.overness = clamp(w.overness + 4, 0, 100);
+  w.momentum = clamp(w.momentum + 8, 0, 100);
+  state.fans += fans;
+  state.momentum = clamp(state.momentum + 4, 0, 100);
+  log(`${w.name}'s promo clip went viral. You gained ${fans.toLocaleString()} curious fans.`, "good");
+}
+
+function lockerRoomFight(w) {
+  const other = state.roster.filter(x => x.id !== w.id)[rnd(0, Math.max(0, state.roster.length - 2))];
+  if (!other) return;
+  showModal("Locker Room Fight", `
+    <p><strong>${esc(w.name)}</strong> and <strong>${esc(other.name)}</strong> had to be separated backstage.</p>
+    <p>Locker room morale is fragile. How do you handle it?</p>
+  `, [
+    { label: "Suspend both one week", cls: "btn warn", action: () => { w.injured = Math.max(w.injured,1); other.injured = Math.max(other.injured,1); state.lockerRoom = clamp(state.lockerRoom + 5,0,100); log(`${w.name} and ${other.name} were suspended for one week after fighting.`, "warn"); closeModal(); renderAll(); } },
+    { label: "Turn it into a rivalry", cls: "btn good", action: () => { createRivalry(w.id, other.id, 48); w.morale = clamp(w.morale + 2,0,100); other.morale = clamp(other.morale + 2,0,100); log(`Real heat became money: ${w.name} vs ${other.name} is now an active rivalry.`, "good"); closeModal(); renderAll(); } },
+    { label: "Do nothing", cls: "btn bad", action: () => { state.lockerRoom = clamp(state.lockerRoom - 10,0,100); w.morale = clamp(w.morale - 4,0,100); other.morale = clamp(other.morale - 4,0,100); log(`The fight between ${w.name} and ${other.name} was ignored. The room got worse.`, "bad"); closeModal(); renderAll(); } }
+  ]);
+}
+
+function sponsorOffer() {
+  showModal("Sponsor Opportunity", `
+    <p>A regional sponsor wants to test your promotion. They will pay <strong>${money(5500)}</strong>, but they expect cleaner production and a safe show this month.</p>
+  `, [
+    { label: "Accept sponsor", cls: "btn good", action: () => { state.cash += 5500; state.sponsorTrust = clamp(state.sponsorTrust + 8,0,100); log("You accepted a regional sponsor deal. Sponsor trust increased.", "good"); closeModal(); renderAll(); } },
+    { label: "Pass", cls: "btn secondary", action: () => { log("You passed on a small sponsor to keep flexibility.", "info"); closeModal(); renderAll(); } }
+  ]);
+}
+
+function trainingBreakthrough(w) {
+  const skill = rnd(1, 4);
+  w.skill = clamp(w.skill + skill, 0, 100);
+  w.safety = clamp(w.safety + rnd(1, 3), 0, 100);
+  w.morale = clamp(w.morale + 4, 0, 100);
+  log(`${w.name} had a strong training week. Skill and safety improved.`, "good");
+}
+
+function localPress() {
+  const boost = rnd(80, 360);
+  state.fans += boost;
+  state.reputation = clamp(state.reputation + 1, 0, 100);
+  log(`Local media covered your fed. You gained ${boost.toLocaleString()} fans and a little credibility.`, "good");
+}
+
+function upgradePush(push) {
+  return { "Enhancement": "Midcard", "Midcard": "Upper Card", "Upper Card": "Ace", "Ace": "Ace" }[push] || "Midcard";
+}
+
+function createRivalry(a, b, heat = 35) {
+  if (a === b || !a || !b) return false;
+  if (state.rivalries.some(r => (r.a === a && r.b === b) || (r.a === b && r.b === a))) return false;
+  state.rivalries.push({ id: crypto.randomUUID(), a, b, heat, weeks: 0, blowoff: "Big Show" });
+  return true;
+}
+
+function renderShowResult(results, revenue, costs, injuryNotes) {
+  const show = state.history[0];
+  return `
+    <div class="stat-grid">
+      ${miniStat("Rating", `${show.rating}/100`)}
+      ${miniStat("Attendance", show.attendance.toLocaleString())}
+      ${miniStat("Revenue", money(revenue))}
+      ${miniStat("Costs", money(costs))}
+      ${miniStat("Profit", money(show.profit))}
+      ${miniStat("Fans", `${show.fanChange >= 0 ? "+" : ""}${show.fanChange.toLocaleString()}`)}
+    </div>
+    <hr class="soft">
+    <div class="grid">
+      ${results.map(r => `
+        <div class="match-result">
+          <div class="rating">${r.rating}/100</div>
+          <strong>${esc(r.title)}</strong>
+          <p>Winner: ${esc(r.winnerName)} ${r.slot.title ? "· Championship stakes" : ""}</p>
+        </div>
+      `).join("")}
+    </div>
+    ${injuryNotes.length ? `<hr class="soft"><p>${injuryNotes.map(esc).join("<br>")}</p>` : ""}
+  `;
+}
+
+function renderRoster() {
+  const champion = wrestlerById(state.titleHolder);
+  $("#roster").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>Roster</h2>
+        <p>${state.roster.length} signed talent · Weekly payroll ${money(weeklyPayroll())} · Champion: ${champion ? esc(champion.name) : "Vacant"}</p>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" onclick="restEveryone()">Rest Everyone</button>
+        <button class="btn" onclick="tab('market')">Scout Free Agents</button>
+      </div>
+    </div>
+    <div class="grid auto">
+      ${state.roster.map(renderWrestlerCard).join("")}
+    </div>
+  `;
+}
+
+function renderWrestlerCard(w) {
+  const champion = state.titleHolder === w.id;
+  return `
+    <div class="wrestler-card">
+      <div class="top">
+        <div>
+          <h3>${esc(w.name)} ${champion ? `<span class="pill warn">Champion</span>` : ""}</h3>
+          <div class="small">${esc(w.nickname)} · ${esc(w.archetype)} · Age ${w.age}</div>
+        </div>
+        <span class="pill ${w.injured > 0 ? "bad" : "good"}">${w.injured > 0 ? `Out ${w.injured}w` : "Healthy"}</span>
+      </div>
+      ${bar("Over", w.overness)}
+      ${bar("Skill", w.skill)}
+      ${bar("Talk", w.charisma)}
+      ${bar("Morale", w.morale, moraleClass(w.morale))}
+      ${bar("Fatigue", w.fatigue, w.fatigue > 70 ? "bad" : w.fatigue > 45 ? "warn" : "good")}
+      <div class="small">Push: <strong>${esc(w.push)}</strong> · Pay: <strong>${money(w.pay)}/wk</strong> · Contract: <strong>${w.contract}w</strong> · Record: ${w.wins}-${w.losses}</div>
+      <div class="actions-row">
+        <button class="btn secondary" onclick="setPush('${w.id}')">Set Push</button>
+        <button class="btn secondary" onclick="renewContract('${w.id}')">Renew</button>
+        <button class="btn secondary" onclick="makeChampion('${w.id}')">Make Champ</button>
+        <button class="btn warn" onclick="startRivalryModal('${w.id}')">Start Rivalry</button>
+        <button class="btn bad" onclick="releaseWrestler('${w.id}')">Release</button>
+      </div>
+    </div>
+  `;
+}
+
+function bar(label, value, cls = "") {
+  const progressCls = cls === "bad" ? "bad" : cls === "good" ? "good" : cls === "warn" ? "" : "info";
+  return `<div class="bar-row"><span>${esc(label)}</span><div class="progress ${progressCls}"><span style="width:${clamp(value,0,100)}%"></span></div><strong>${Math.round(value)}</strong></div>`;
+}
+
+function setPush(id) {
+  const w = wrestlerById(id);
+  if (!w) return;
+  showModal(`Set Push: ${esc(w.name)}`, `<p>Higher pushes raise morale for ambitious talent, but fans expect pushed wrestlers to win and be used well.</p>`, [
+    ...["Enhancement", "Midcard", "Upper Card", "Ace"].map(push => ({
+      label: push,
+      cls: push === w.push ? "btn" : "btn secondary",
+      action: () => { w.push = push; w.morale = clamp(w.morale + (push === "Ace" ? 4 : 1), 0, 100); log(`${w.name} is now positioned as ${push}.`, "info"); closeModal(); renderAll(); }
+    })),
+    { label: "Cancel", cls: "btn ghost", action: closeModal }
+  ]);
+}
+
+function renewContract(id) {
+  const w = wrestlerById(id);
+  if (!w) return;
+  const weeks = 24;
+  const raise = Math.max(40, Math.round((w.overness + w.ego) / 4) * 10);
+  showModal(`Renew ${esc(w.name)}`, `
+    <p>Offer a ${weeks}-week renewal. Their weekly pay increases by ${money(raise)}.</p>
+    <p>Current pay: ${money(w.pay)} · New pay: ${money(w.pay + raise)}</p>
+  `, [
+    { label: "Offer Deal", cls: "btn good", action: () => { w.contract = weeks; w.pay += raise; w.morale = clamp(w.morale + 12,0,100); log(`${w.name} signed a ${weeks}-week extension.`, "good"); closeModal(); renderAll(); } },
+    { label: "Cancel", cls: "btn secondary", action: closeModal }
+  ]);
+}
+
+function makeChampion(id) {
+  const w = wrestlerById(id);
+  if (!w) return;
+  const old = wrestlerById(state.titleHolder);
+  state.titleHolder = id;
+  w.morale = clamp(w.morale + 10, 0, 100);
+  w.ego = clamp(w.ego + 6, 0, 100);
+  if (old && old.id !== id) old.morale = clamp(old.morale - 8, 0, 100);
+  log(`${w.name} was crowned WrestleSIM Champion by management decision.`, "warn");
+  renderAll();
+}
+
+function startRivalryModal(id) {
+  const w = wrestlerById(id);
+  const others = state.roster.filter(x => x.id !== id);
+  showModal(`Start Rivalry: ${esc(w.name)}`, `
+    <p>Pick an opponent. Rivalries raise match ratings over time, then pay off best on a Big Show.</p>
+    <label>Opponent
+      <select id="rivalPick">${others.map(o => `<option value="${o.id}">${esc(o.name)} · Over ${o.overness}</option>`).join("")}</select>
+    </label>
+  `, [
+    { label: "Start Rivalry", cls: "btn good", action: () => { const opponent = $("#rivalPick").value; if (createRivalry(id, opponent, rnd(28, 46))) { const o = wrestlerById(opponent); log(`${w.name} and ${o.name} started a rivalry.`, "good"); } else toast("That rivalry already exists."); closeModal(); renderAll(); } },
+    { label: "Cancel", cls: "btn secondary", action: closeModal }
+  ]);
+}
+
+function releaseWrestler(id) {
+  const w = wrestlerById(id);
+  if (!w) return;
+  const fee = Math.round(w.pay * 3.5);
+  showModal(`Release ${esc(w.name)}?`, `
+    <p>Releasing talent costs ${money(fee)} in buyout/legal headaches. It may upset the room if they were popular.</p>
+  `, [
+    { label: `Release (${money(fee)})`, cls: "btn bad", action: () => { state.cash -= fee; state.roster = state.roster.filter(x => x.id !== id); if (state.titleHolder === id) state.titleHolder = state.roster[0]?.id || null; state.lockerRoom = clamp(state.lockerRoom - Math.round(w.overness/18),0,100); log(`${w.name} was released from WrestleSIM.`, "bad"); closeModal(); renderAll(); } },
+    { label: "Cancel", cls: "btn secondary", action: closeModal }
+  ]);
+}
+
+function restEveryone() {
+  state.roster.forEach(w => { w.fatigue = clamp(w.fatigue - 16, 0, 100); w.morale = clamp(w.morale + 1, 0, 100); });
+  state.cash -= 900;
+  log("You paid for a lighter training week. Fatigue dropped across the roster.", "info");
+  renderAll();
+}
+
+function renderMarket() {
+  $("#market").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>Free Agents</h2>
+        <p>Scout talent, sign bargains, or overpay for names who can move tickets.</p>
+      </div>
+      <div class="controls">
+        <button class="btn secondary" onclick="paidScouting()">Paid Scouting ${money(1200)}</button>
+      </div>
+    </div>
+    <div class="grid auto">
+      ${state.freeAgents.map(renderFreeAgentCard).join("")}
+    </div>
+  `;
+}
+
+function renderFreeAgentCard(w) {
+  const signBonus = Math.round(w.pay * 2.5);
+  return `
+    <div class="wrestler-card">
+      <div class="top">
+        <div>
+          <h3>${esc(w.name)}</h3>
+          <div class="small">${esc(w.nickname)} · ${esc(w.archetype)} · Age ${w.age}</div>
+        </div>
+        <span class="pill info">FA</span>
+      </div>
+      ${bar("Over", w.overness)}
+      ${bar("Skill", w.skill)}
+      ${bar("Talk", w.charisma)}
+      ${bar("Safety", w.safety, w.safety < 45 ? "warn" : "good")}
+      <div class="small">Ask: <strong>${money(w.pay)}/wk</strong> · Signing bonus: <strong>${money(signBonus)}</strong> · Attitude: ${esc(w.attitude)}</div>
+      <div class="actions-row">
+        <button class="btn good" onclick="signFreeAgent('${w.id}')">Sign</button>
+        <button class="btn secondary" onclick="scoutReport('${w.id}')">Scout Report</button>
+      </div>
+    </div>
+  `;
+}
+
+function signFreeAgent(id) {
+  const w = state.freeAgents.find(x => x.id === id);
+  if (!w) return;
+  const bonus = Math.round(w.pay * 2.5);
+  if (state.cash < bonus) return toast("You do not have enough cash for that signing bonus.");
+  state.cash -= bonus;
+  w.contract = rnd(18, 34);
+  w.morale = clamp(w.morale + 6, 0, 100);
+  state.roster.push(w);
+  state.freeAgents = state.freeAgents.filter(x => x.id !== id);
+  log(`${w.name} signed with WrestleSIM for ${money(w.pay)}/week.`, "good");
+  renderAll();
+}
+
+function scoutReport(id) {
+  const w = state.freeAgents.find(x => x.id === id);
+  if (!w) return;
+  const grade = Math.round((w.skill + w.charisma + w.overness + w.safety + w.look) / 5);
+  showModal(`Scout Report: ${esc(w.name)}`, `
+    <p><strong>Overall read:</strong> ${grade >= 70 ? "Potential cornerstone talent." : grade >= 58 ? "Useful roster piece with upside." : grade >= 45 ? "Cheap depth, but not a needle mover." : "Risky signing unless you need bodies."}</p>
+    <p><strong>Best use:</strong> ${bestUse(w)}.</p>
+    <p><strong>Backstage risk:</strong> ${w.ego > 75 || ["Hothead", "Politicker", "Party Animal"].includes(w.attitude) ? "High" : w.ego > 50 ? "Medium" : "Low"}.</p>
+  `, [{ label: "Close", cls: "btn", action: closeModal }]);
+}
+
+function bestUse(w) {
+  if (w.charisma > 70) return "promo-heavy rivalries and angles";
+  if (w.skill > 70) return "workrate matches and tournament runs";
+  if (w.look > 72) return "monster push or special attraction";
+  if (w.safety < 42) return "short controlled matches until they improve";
+  return "midcard depth with careful booking";
+}
+
+function paidScouting() {
+  if (state.cash < 1200) return toast("Not enough cash for paid scouting.");
+  state.cash -= 1200;
+  state.freeAgents.push(...makeFreeAgents(4));
+  log("Paid scouts found four new free agents.", "info");
+  renderAll();
+}
+
+function refreshFreeAgents() {
+  if (state.freeAgents.length < 8 || Math.random() < 0.22) {
+    state.freeAgents.push(makeWrestler({ base: rnd(31, 72), pay: rnd(190, 760) }));
+  }
+  if (state.freeAgents.length > 18) state.freeAgents.splice(0, state.freeAgents.length - 18);
+}
+
+function renderHistory() {
+  $("#history").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>Promotion History</h2>
+        <p>Track your show ratings, big moments, money swings, and news.</p>
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Show Archive</h3>
+        ${state.history.length ? state.history.map(h => `
+          <div class="log-item ${h.profit >= 0 ? "good" : "bad"}" style="margin-bottom:10px;">
+            <strong>Week ${h.week}: ${esc(h.name)}</strong><br>
+            Rating ${h.rating}/100 · Attendance ${h.attendance.toLocaleString()} · Profit ${money(h.profit)} · Fans ${h.fanChange >= 0 ? "+" : ""}${h.fanChange.toLocaleString()}
+            <br><span class="small">${h.matches.map(m => `${esc(m.winner)} won (${m.rating})`).join(" · ")}</span>
+          </div>
+        `).join("") : `<p>No shows yet.</p>`}
+      </div>
+      <div class="card">
+        <h3>News Log</h3>
+        ${renderLog(state.news)}
+      </div>
+    </div>
+  `;
+}
+
+function renderLog(items) {
+  if (!items.length) return `<p>No news yet.</p>`;
+  return `<div class="log-list">${items.map(n => `<div class="log-item ${n.type}"><strong>Week ${n.week}</strong> · ${esc(n.message)}</div>`).join("")}</div>`;
+}
+
+function renderHelp() {
+  $("#help").innerHTML = `
+    <div class="section-title">
+      <div>
+        <h2>How to Play WrestleSIM</h2>
+        <p>A business-first wrestling promotion sim you can run fully in the browser.</p>
+      </div>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Your Weekly Loop</h3>
+        <p>1. Check your office stats: cash, fans, locker room, reputation, sponsor trust.</p>
+        <p>2. Book a weekly show. Every fourth week is naturally a good time for a Big Show.</p>
+        <p>3. Use strong workers in important slots, rest tired talent, and protect morale.</p>
+        <p>4. Sign free agents, renew contracts, and start rivalries that can pay off on big events.</p>
+      </div>
+      <div class="card">
+        <h3>What Drives Show Ratings?</h3>
+        <p>Ratings are built from wrestling skill, charisma, overness, momentum, safety, match type, rivalry heat, and show position.</p>
+        <p>Bad fatigue, unsafe matches, double-booking, and cold main events drag the show down.</p>
+      </div>
+      <div class="card">
+        <h3>Business Side</h3>
+        <p>Tickets and attendance pay the bills. Sponsors like profit, good production, reputation, and consistent shows.</p>
+        <p>Marketing helps grow fans, but overspending can bury an indy fed fast.</p>
+      </div>
+      <div class="card">
+        <h3>Backstage Headaches</h3>
+        <p>Wrestlers demand raises, show up late, fight, go viral, get hurt, or threaten to jump to bigger promotions.</p>
+        <p>Your responses change morale, locker room health, cash, and future booking pressure.</p>
+      </div>
+      <div class="card">
+        <h3>Win Condition</h3>
+        <p>There is no hard ending yet. The long-term goal is to climb from Lousy Indy Fed to Major League Promotion and compete with the giants.</p>
+      </div>
+      <div class="card">
+        <h3>Save System</h3>
+        <p>Use the Save button. Your game stores in your browser through localStorage. Export/import can be added next if you want shareable saves.</p>
+      </div>
+    </div>
+  `;
+}
+
+function setMarketing(value) { state.marketingSpend = Number(value); renderDashboard(); }
+function setTicketPrice(value) { state.ticketPrice = Number(value); renderDashboard(); }
+function setProduction(value) { state.productionLevel = Number(value); renderDashboard(); }
+function setMerch(value) { state.merchQuality = Number(value); renderDashboard(); }
+
+function openPromotionModal() {
+  showModal("Promotion Settings", `
+    <div class="form-grid">
+      <label>Promotion Name
+        <input id="promotionNameInput" class="input" value="${esc(state.promotion)}">
+      </label>
+    </div>
+    <p>Change the name of your fed. The game itself stays called WrestleSIM.</p>
+  `, [
+    { label: "Save Name", cls: "btn good", action: () => { state.promotion = $("#promotionNameInput").value.trim() || state.promotion; log(`The promotion is now known as ${state.promotion}.`, "info"); closeModal(); renderAll(); } },
+    { label: "Close", cls: "btn secondary", action: closeModal }
+  ]);
+}
+
+function saveGame() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  toast("Game saved in this browser.");
+}
+function loadGame() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return toast("No saved game found.");
+  try {
+    state = JSON.parse(raw);
+    initBooking();
+    renderAll();
+    toast("Saved game loaded.");
+  } catch (e) {
+    toast("Save file could not be loaded.");
+  }
+}
+
+function showModal(title, body, actions = []) {
+  const root = $("#modalRoot");
+  root.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal" role="dialog" aria-modal="true">
+        <h2>${title}</h2>
+        ${body}
+        <div class="modal-actions" id="modalActions"></div>
+      </div>
+    </div>
+  `;
+  const actionsEl = $("#modalActions");
+  actions.forEach((a, idx) => {
+    const btn = document.createElement("button");
+    btn.className = a.cls || "btn";
+    btn.textContent = a.label;
+    btn.addEventListener("click", a.action || closeModal);
+    actionsEl.appendChild(btn);
+  });
+}
+function closeModal() { $("#modalRoot").innerHTML = ""; }
+function toast(message) {
+  const t = $("#toast");
+  t.textContent = message;
+  t.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+function boot() {
+  $$(".tab").forEach(btn => btn.addEventListener("click", () => tab(btn.dataset.tab)));
+  $("#newGameBtn").addEventListener("click", () => showModal("Start New Game?", "<p>This will replace the current active game. Save first if you want to keep it.</p>", [
+    { label: "Start New Game", cls: "btn bad", action: () => { closeModal(); newGame(); } },
+    { label: "Cancel", cls: "btn secondary", action: closeModal }
+  ]));
+  $("#saveBtn").addEventListener("click", saveGame);
+  $("#loadBtn").addEventListener("click", loadGame);
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      state = JSON.parse(saved);
+      initBooking();
+      renderAll();
+      toast("Loaded your saved WrestleSIM game.");
+    } catch (e) { newGame(); }
+  } else {
+    newGame();
+  }
+}
+
+window.addEventListener("DOMContentLoaded", boot);
+
+</script>
 </body>
 </html>
