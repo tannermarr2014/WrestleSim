@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WrestleSIM</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Browser Business Simulator</p>
+        <h1>Wrestle<span>SIM</span></h1>
+        <p class="tagline">Build a broke indy fed into a national wrestling powerhouse.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="newGameBtn" class="btn secondary">New Game</button>
+        <button id="saveBtn" class="btn">Save</button>
+        <button id="loadBtn" class="btn secondary">Load</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Game sections">
+      <button class="tab active" data-tab="dashboard">Office</button>
+      <button class="tab" data-tab="booking">Book Show</button>
+      <button class="tab" data-tab="roster">Roster</button>
+      <button class="tab" data-tab="market">Free Agents</button>
+      <button class="tab" data-tab="history">History</button>
+      <button class="tab" data-tab="help">Help</button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="panel tab-panel active"></section>
+      <section id="booking" class="panel tab-panel"></section>
+      <section id="roster" class="panel tab-panel"></section>
+      <section id="market" class="panel tab-panel"></section>
+      <section id="history" class="panel tab-panel"></section>
+      <section id="help" class="panel tab-panel"></section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="modalRoot"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
